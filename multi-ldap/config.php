@@ -335,7 +335,7 @@ class LdapMultiAuthPluginConfig extends PluginConfig {
 					
 				)
 			)) ,
-			/*'sync_data' => new TextboxField(array(
+			'sync_data' => new TextboxField(array(
 				'id' => 'sync_data',
 				'label' => $__('Sync Lastrun') ,
 				'configuration' => array(
@@ -343,7 +343,7 @@ class LdapMultiAuthPluginConfig extends PluginConfig {
 					'length' => 20,
 					'visibility' => false
 				) ,
-			)) ,*/
+			)) ,
 			'sync_full' => new BooleanField(array(
 				'label' => $__('Full Sync') ,
 				'hint' => $__('This does a full sync on the next scheduled time (this happens only once)') ,
