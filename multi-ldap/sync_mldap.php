@@ -1,4 +1,7 @@
 <?php
+define('DISABLE_SESSION', true);
+require_once('../main.inc.php');
+
 class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 	var $config;
 	var $sync_info;
@@ -62,7 +65,7 @@ class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 		}
 		return $combined_userlist;
 	}
-	
+
 	function sendAlertMsg($msg) {
 		$this->config = LdapMultiAuthPlugin::getConfig();
 		$ostmail = Email::lookup($this
@@ -248,7 +251,7 @@ class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 				}
 
 				if ($ost_contact_field == 'name') {
-					$sql_value = db_result(db_query("SELECT name FROM ost_user									
+					$sql_value = db_result(db_query("SELECT name FROM " . TABLE_PREFIX . "user									
 								WHERE id = " . $user->user_id));
 				}
 
@@ -356,7 +359,7 @@ class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 		// Check if agents shall be updated with LDAP info
 		if ($this->config['sync-agents']) {
 			// Select all osTicket Agents
-			$qry_ostagents = "SELECT " . TABLE_PREFIX ."staff.username, " . TABLE_PREFIX . "staff.email, " . TABLE_PREFIX . "staff.phone, " . TABLE_PREFIX . "staff.phone_ext as ext, " . TABLE_PREFIX . "staff.mobile FROM " . TABLE_PREFIX . "staff WHERE " . TABLE_PREFIX . "staff.username IS NOT NULL";
+			$qry_ostagents = "SELECT username, " . "email, "  . "phone, " . "phone_ext as ext, " . "mobile FROM " . TABLE_PREFIX . "staff WHERE " . "username IS NOT NULL";
 
 			$res_ostagents = db_query($qry_ostagents);
 
@@ -390,7 +393,7 @@ class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 					// Mobile Number
 					if ($ad_users[$key]->mobile != $sql_ostagents['mobile']) {
 						$qry_update_ostagent_mobile = "UPDATE " . TABLE_PREFIX . "staff
-                       SET mobile='" . sanitize_phone($ad_users[$key]->mobile) . "'
+                       SET mobile='" . $this->sanitize_phone($ad_users[$key]->mobile) . "'
                        WHERE (" . TABLE_PREFIX . "staff.username='" . $ad_users[$key]->samaccountname . "')";
 						$updates[] = 'mobile';
 						$result = db_query($qry_update_ostagent_mobile);
@@ -505,4 +508,8 @@ class SyncLDAPMultiClass extends LDAPMultiAuthentication {
 		return $this->sync_results;
 	}
 }
+
+$sync = new SyncLDAPMultiClass(str_replace('plugin.', '', $_POST['data']));
+$sync->check_users();
+
 ?>
